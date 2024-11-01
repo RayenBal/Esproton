@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Listings</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="google-signin-client_id" content="147657062495-4j1542bp1fl6v08jqa27mdv2e7088pt0.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://platform.linkedin.com/in.js" type="text/javascript">
+        api_key: 77k3se6bxqiuzo
+        authorize: true
+        onLoad: onLinkedInLoad
+    </script>
+    <style>
+        /* Google Sign-In Button Container */
+        #g_id_signin {
+            margin: 20px auto;
+            max-width: 400px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .g-signin2 {
+            width: 100%;
+            background-color: #4285F4;
+            color: white;
+            border-radius: 25px;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .g-signin2:hover {
+            background-color: #357AE8;
+        }
+
+        /* LinkedIn Button Styles */
+        #linkedinButton {
+            margin: 20px auto;
+            max-width: 400px;
+            display: flex;
+            justify-content: center;
+            background-color: #0077B5;
+            color: white;
+            border-radius: 25px;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #linkedinButton:hover {
+            background-color: #005582;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Navbar styles */
+        .navbar {
+            background-color: #343a40;
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: white !important;
+        }
+
+        .navbar-nav .nav-item .nav-link:hover {
+            color: #00c6ff !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="index.html">Esproton</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="job_listings.html">Job Listings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="about.html">About Us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="contact.html">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="profile.html">Profile</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <h1 class="text-center mt-4">Job Listings</h1>
+            <div class="row mt-4">
+                <div class="col-md-6 mx-auto">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                    <select id="filterSelect" class="form-control mt-2">
+                        <option value="">All Types</option>
+                        <option value="Hackathon">Hackathon</option>
+                        <option value="Offre de stage">Stage</option>
+                        <option value="Offre d'emploi">Job Offer</option>
+                    </select>
+                    <button id="refreshButton" class="btn btn-primary mt-2" onclick="fetchJobListings()">Refresh</button>
+                </div>
+            </div>
+        </header>
+
+        <div id="g_id_signin"></div>
+        <button id="linkedinButton" class="btn btn-primary">Sign in with LinkedIn</button>
+        <div id="job-listings" class="row"></div>
+
+        <nav aria-label="Page navigation">
+            <ul class="pagination" id="pagination"></ul>
+        </nav>
+
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="modal-details"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        const savedJobs = new Set(JSON.parse(localStorage.getItem('savedJobs')) || []);
+
+        async function fetchJobListings() {
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbzpdFVoDGHa_bO3-c_zMqdoEy06pYshgLA457G48v_EjuATgwxBzEeHAXC9_Ix22fc6/exec');
+                const jobOffers = await response.json();
+                window.jobOffers = jobOffers;
+                displayJobListings(jobOffers);
+                setupPagination(jobOffers.length);
+            } catch (error) {
+                console.error('Error fetching job listings:', error);
+            }
+        }
+
+        function displayJobListings(offers) {
+            const jobListingsDiv = document.getElementById('job-listings');
+            jobListingsDiv.innerHTML = '';
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedOffers = offers.slice(startIndex, endIndex);
+
+            if (paginatedOffers.length === 0) {
+                jobListingsDiv.innerHTML = '<p>No job listings available.</p>';
+                return;
+            }
+
+            paginatedOffers.forEach(listing => {
+                const jobItem = document.createElement('div');
+                jobItem.className = 'col-md-4 mb-4';
+                jobItem.innerHTML = `
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">${listing["Nom de l'organisme :"]}</h5>
+                            <p class="card-text"><strong>Email:</strong> ${listing["Email (contact principal)"]}</p>
+                            <p class="card-text"><strong>Description:</strong> ${listing["Description de l'activité"]}</p>
+                            <p class="card-text"><strong>Type:</strong> ${listing["Type de l'activité"] || "Not Specified"}</p>
+                            <button class="btn btn-info" onclick="showDetails(${JSON.stringify(listing).replace(/"/g, '&quot;')})">Voir Détails</button>
+                            <button class="btn btn-success save-job" data-job-id="${listing["ID"]}">Sauvegarder</button>
+                        </div>
+                    </div>
+                `;
+                jobListingsDiv.appendChild(jobItem);
+            });
+
+            document.querySelectorAll('.save-job').forEach(button => {
+                button.addEventListener('click', function() {
+                    const jobId = this.getAttribute('data-job-id');
+                    const jobData = window.jobOffers.find(offer => offer["ID"] === jobId);
+
+                    if (savedJobs.has(jobId)) {
+                        alert('Cette offre est déjà sauvegardée.');
+                    } else {
+                        savedJobs.add(jobId);
+                        localStorage.setItem('savedJobs', JSON.stringify([...savedJobs]));
+
+                        const savedJobList = JSON.parse(localStorage.getItem('savedJobList')) || [];
+                        savedJobList.push(jobData);
+                        localStorage.setItem('savedJobList', JSON.stringify(savedJobList));
+
+                        alert('Offre d\'emploi sauvegardée!');
+                    }
+                });
+            });
+        }
+
+        function setupPagination(totalItems) {
+            const paginationDiv = document.getElementById('pagination');
+            paginationDiv.innerHTML = '';
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                pageItem.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                pageItem.onclick = function() {
+                    currentPage = i;
+                    displayJobListings(window.jobOffers);
+                    setupPagination(totalItems);
+                };
+                paginationDiv.appendChild(pageItem);
+            }
+        }
+
+        function showDetails(listing) {
+            const modal = document.getElementById('modal');
+            const modalDetails = document.getElementById('modal-details');
+            modalDetails.innerHTML = `
+                <h5>${listing["Nom de l'organisme :"]}</h5>
+                <p><strong>Email:</strong> ${listing["Email (contact principal)"]}</p>
+                <p><strong>Description:</strong> ${listing["Description de l'activité"]}</p>
+                <p><strong>Type:</strong> ${listing["Type de l'activité"] || "Not Specified"}</p>
+            `;
+            modal.style.display = "block";
+        }
+
+        document.querySelector('.close').onclick = function() {
+            document.getElementById('modal').style.display = "none";
+        };
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+
+        window.onload = function() {
+            fetchJobListings();
+            initGoogleSignIn();
+        };
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const filterValue = this.value.toLowerCase();
+            const filteredOffers = window.jobOffers.filter(offer =>
+                offer["Nom de l'organisme :"].toLowerCase().includes(filterValue)
+            );
+            displayJobListings(filteredOffers);
+            setupPagination(filteredOffers.length);
+        });
+
+        document.getElementById('filterSelect').addEventListener('change', function() {
+            const selectedType = this.value;
+            const filteredOffers = window.jobOffers.filter(offer =>
+                selectedType ? offer["Type de l'activité"] === selectedType : true
+            );
+            displayJobListings(filteredOffers);
+            setupPagination(filteredOffers.length);
+        });
+
+        function initGoogleSignIn() {
+            gapi.load('auth2', function () {
+                gapi.auth2.init({
+                    client_id: '147657062495-4j1542bp1fl6v08jqa27mdv2e7088pt0.apps.googleusercontent.com',
+                    scope: 'profile email'
+                }).then(function () {
+                    gapi.signin2.render('g_id_signin', {
+                        'scope': 'profile email',
+                        'width': 200,
+                        'height': 50,
+                        'longtitle': true,
+                        'theme': 'dark',
+                        'onsuccess': onSignIn,
+                        'onfailure': function(error) {
+                            console.error('Google Sign-In failed:', error);
+                        }
+                    });
+                });
+            });
+        }
+
+        function onSignIn(googleUser) {
+            const profile = googleUser.getBasicProfile();
+            console.log('ID: ' + profile.getId());
+            console.log('Name: ' + profile.getName());
+            console.log('Image URL: ' + profile.getImageUrl());
+            console.log('Email: ' + profile.getEmail());
+        }
+
+        function onLinkedInLoad() {
+            document.getElementById('linkedinButton').onclick = function() {
+                const clientId = '77k3se6bxqiuzo';
+                const redirectUri = 'http://127.0.0.1:5500/index.html';
+                const scope = 'r_liteprofile r_emailaddress';
+                const url = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}`;
+                window.location.href = url;
+            };
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

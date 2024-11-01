@@ -1,0 +1,206 @@
+/* Importing Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f6f9; /* Light background for contrast */
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Input and Button Styles */
+#searchInput,
+#filterSelect,
+#refreshButton {
+    margin-bottom: 15px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    padding: 10px 15px;
+    width: 100%;
+    max-width: 400px; /* Increased max-width */
+    transition: border-color 0.3s;
+}
+
+/* Google Sign-In Button Container */
+#g_id_signin {
+    margin: 20px auto; /* Center the button */
+    max-width: 400px; /* Set a max-width for the button */
+    display: flex; /* Use flexbox for alignment */
+    justify-content: center; /* Center horizontally */
+}
+
+/* Ensure button visibility */
+.g-signin2 {
+    width: 100%; /* Full width for better touch targets */
+    background-color: #4285F4; /* Google's blue color */
+    color: white;
+    border-radius: 25px; /* Match your button styles */
+    padding: 10px;
+    text-align: center; /* Center text */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.g-signin2:hover {
+    background-color: #357AE8; /* Darker blue on hover */
+}
+
+#searchInput:focus,
+#filterSelect:focus,
+#refreshButton:focus {
+    border-color: #2980b9;
+}
+
+/* Job Listings Grid */
+#job-listings {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three cards per row */
+    gap: 20px; /* Space between cards */
+}
+
+/* Card Styles */
+.card {
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 300px; /* Fixed width for uniformity */
+    height: 250px; /* Fixed height for uniformity */
+    padding: 15px; /* Padding for better spacing */
+    overflow: hidden; /* Prevent overflow of content */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    color: #2980b9;
+    font-weight: 700;
+    margin: 0; /* Reset margin */
+    font-size: 1.2em; /* Adjusted font size for visibility */
+    white-space: nowrap; /* Prevent wrapping for titles */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Add ellipsis for long titles */
+}
+
+.card-text {
+    color: #7f8c8d;
+    margin: 5px 0; /* Adjusted margin */
+    max-height: 70px; /* Limit height for descriptions */
+    overflow: hidden; /* Hide overflow */
+    line-height: 1.5;
+    text-overflow: ellipsis; /* Add ellipsis for long descriptions */
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 25px;
+    padding: 10px 15px; /* Reduced padding for better touch targets */
+    font-weight: 600;
+    margin-top: 10px; /* Adjusted margin */
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, #16a085, #1abc9c);
+    transform: scale(1.05); /* Slightly scale button on hover */
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header h5 {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    color: #2c3e50;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #333;
+    cursor: pointer;
+}
+
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    border: none;
+    border-radius: 25px;
+    padding: 10px 15px;
+    margin: 0 5px;
+    background-color: #2980b9;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.pagination button:hover {
+    background-color: #1abc9c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #job-listings {
+        grid-template-columns: repeat(2, 1fr); /* Two cards per row on smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    #job-listings {
+        grid-template-columns: 1fr; /* One card per row on very small screens */
+    }
+}

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>À Propos de Nous - Esproton</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0d0d0d;
+            color: #e0e0e0;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background: rgba(13, 13, 13, 0.95);
+            padding: 20px;
+        }
+
+        .navbar-brand, .nav-link {
+            color: #00c6ff !important;
+            font-weight: 600;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .nav-link:hover {
+            color: #00ff9d !important;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #0e0e0e, #151515);
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #00c6ff, #007bff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Section Titles */
+        section h2 {
+            color: #00c6ff;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        /* Chart Styling */
+        .chart-container {
+            margin: auto;
+            max-width: 700px;
+            margin-bottom: 40px;
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #0e0e0e;
+            color: #00c6ff;
+        }
+
+        .footer a {
+            color: #00ff9d;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Chart-specific styles */
+        canvas {
+            margin: auto;
+            background: linear-gradient(135deg, #1c1c1e, #2b2b2d);
+            border-radius: 15px;
+            padding: 10px;
+        }
+
+        .chart-tooltip {
+            font-weight: bold;
+            background-color: #333;
+            color: #fff;
+            padding: 8px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="index.html">Esproton</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="job_listings.html">Offres d'emploi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="about.html">À Propos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="contact.html">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="profile.html">Profil</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="container-fluid hero">
+        <h1>À Propos de Nous</h1>
+        <p>Découvrez notre mission et les valeurs qui nous animent.</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Mission Section -->
+        <section>
+            <h2>Notre Mission</h2>
+            <p>
+                Notre mission est d'aider les utilisateurs à trouver des opportunités d'emploi qui correspondent à leurs compétences et à leurs aspirations. 
+                Nous croyons en l'égalité des chances et en l'accès à l'information pour tous.
+            </p>
+        </section>
+
+        <!-- Improved Stats Section -->
+        <section>
+            <h2>Statistiques Détaillées</h2>
+            <div class="chart-container">
+                <canvas id="offersChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="jobTypesChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="orgTypesChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="modeChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="experienceChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="deadlineChart" width="400" height="200"></canvas>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <h2>Contactez-nous</h2>
+            <p>Pour toute question ou commentaire, n'hésitez pas à nous contacter via notre page <a href="contact.html">Contact</a>.</p>
+        </footer>
+    </div>
+
+    <!-- Script for Charts -->
+    <script>
+        const jobData = [
+            { type: "Hackathon", organization: "Association/ONG", mode: "Hybride", experience: "Débutant", deadline: "2024-05-10" },
+            { type: "Offre de stage", organization: "Entreprise", mode: "A distance", experience: "Débutant", deadline: "2024-06-01" },
+            { type: "Offre d'emploi", organization: "Startup", mode: "Sur site", experience: "Intermédiaire", deadline: "2024-04-30" },
+            { type: "Offre de stage", organization: "Association/ONG", mode: "Hybride", experience: "Débutant", deadline: "2024-05-15" },
+            { type: "Offre d'emploi", organization: "Banque", mode: "Hybride", experience: "Expert", deadline: "2024-07-01" },
+            { type: "Offre de stage", organization: "Entreprise", mode: "Sur site", experience: "Intermédiaire", deadline: "2024-04-20" },
+            { type: "Hackathon", organization: "Association/ONG", mode: "A distance", experience: "Expert", deadline: "2024-05-20" },
+        ];
+
+        function calculateStatistics(data) {
+            const totalOffers = data.length;
+            const typeCounts = {};
+            const orgCounts = {};
+            const modeCounts = {};
+            const experienceCounts = {};
+            const deadlines = [];
+
+            data.forEach(job => {
+                typeCounts[job.type] = (typeCounts[job.type] || 0) + 1;
+                orgCounts[job.organization] = (orgCounts[job.organization] || 0) + 1;
+                modeCounts[job.mode] = (modeCounts[job.mode] || 0) + 1;
+                experienceCounts[job.experience] = (experienceCounts[job.experience] || 0) + 1;
+                deadlines.push(new Date(job.deadline));
+            });
+
+            return { totalOffers, typeCounts, orgCounts, modeCounts, experienceCounts, deadlines };
+        }
+
+        const statistics = calculateStatistics(jobData);
+
+        function createCharts() {
+            const ctxOffers = document.getElementById('offersChart').getContext('2d');
+            new Chart(ctxOffers, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Total Offres d\'Emploi'],
+                    datasets: [{
+                        label: 'Offres',
+                        data: [statistics.totalOffers],
+                        backgroundColor: ['#2980b9'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'top' } },
+                    animation: { duration: 2000 }
+                }
+            });
+
+            const ctxJobTypes = document.getElementById('jobTypesChart').getContext('2d');
+            new Chart(ctxJobTypes, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(statistics.typeCounts),
+                    datasets: [{
+                        label: 'Offres par Type',
+                        data: Object.values(statistics.typeCounts),
+                        backgroundColor: ['#1abc9c'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { tooltip: { enabled: true } }
+                }
+            });
+
+            const ctxOrgTypes = document.getElementById('orgTypesChart').getContext('2d');
+            new Chart(ctxOrgTypes, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(statistics.orgCounts),
+                    datasets: [{
+                        label: 'Offres par Organisation',
+                        data: Object.values(statistics.orgCounts),
+                        backgroundColor: ['#e67e22', '#f39c12', '#c0392b'],
+                    }]
+                },
+                options: { responsive: true }
+            });
+
+            const ctxMode = document.getElementById('modeChart').getContext('2d');
+            new Chart(ctxMode, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statistics.modeCounts),
+                    datasets: [{
+                        label: 'Mode de Travail',
+                        data: Object.values(statistics.modeCounts),
+                        backgroundColor: ['#8e44ad', '#2980b9', '#27ae60'],
+                    }]
+                },
+                options: { responsive: true }
+            });
+
+            const ctxExperience = document.getElementById('experienceChart').getContext('2d');
+            new Chart(ctxExperience, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(statistics.experienceCounts),
+                    datasets: [{
+                        label: 'Niveau d\'Expérience',
+                        data: Object.values(statistics.experienceCounts),
+                        backgroundColor: '#f39c12',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } },
+                }
+            });
+
+            const ctxDeadline = document.getElementById('deadlineChart').getContext('2d');
+            new Chart(ctxDeadline, {
+                type: 'line',
+                data: {
+                    labels: statistics.deadlines.map(date => date.toLocaleDateString('fr-FR')),
+                    datasets: [{
+                        label: 'Dates Limites des Offres',
+                        data: statistics.deadlines.map(date => date.getTime()),
+                        backgroundColor: '#3498db',
+                        borderColor: '#2980b9',
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { x: { type: 'time', time: { unit: 'month' } }, y: { beginAtZero: true } },
+                }
+            });
+        }
+
+        createCharts();
+    </script>
+</body>
+
+</html>
